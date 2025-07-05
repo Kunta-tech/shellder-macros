@@ -2,6 +2,13 @@
 name = "shellder-macros"
 version = "0.1.0"
 edition = "2021"
+authors = ["Saugata Kundu <kundusaugata576@gmail.com>"]
+description = "A lightweight, type-safe dependency injection and application framework for Rust inspired by Spring."
+license = "Apache-2.0"
+repository = "https://github.com/Kunta-tech/shellder"
+readme = "README.md"
+keywords = ["dependency-injection", "framework", "di", "ioc", "rust", "macros"]
+categories = ["development-tools", "rust-patterns"]
 
 [lib]
 proc-macro = true
