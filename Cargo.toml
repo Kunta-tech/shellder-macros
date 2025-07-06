@@ -7,7 +7,7 @@ description = "A lightweight, type-safe dependency injection and application fra
 license = "Apache-2.0"
 repository = "https://github.com/Kunta-tech/shellder-macros"
 readme = "README.md"
-keywords = ["dependency-injection", "framework", "ioc", "rust", "macros"]
+keywords = ["dependency-injection", "framework", "di", "ioc", "rust", "macros"]
 categories = ["development-tools", "rust-patterns"]
 
 [lib]
