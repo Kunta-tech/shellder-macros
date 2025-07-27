@@ -1,86 +1,126 @@
-# Shellder
+# 🐚 Shellder
 
 *A lightweight, Spring-inspired Dependency Injection framework for Rust.*
-*A Crab needs its Shell*
+***"A Crab needs its Shell"***
+
 ---
 
 ## ✨ Overview
 
-Shellder provides a minimal, ergonomic foundation for building modular Rust applications with Dependency Injection.
+**Shellder** brings a modular, ergonomic approach to Rust applications by offering:
 
-The core design focuses on:
+* 📦 **Dependency Injection** via `#[component]` and `#[derive(App)]` macros
+* ⚙️ **Lifecycle Hooks** (`startup`, `run`, `cleanup`)
+* 🛠️ **Compile-time struct injection**
+* 🧵 **Thread-safe container (`Arc`-based)**
+* 🔧 **Optional lightweight logger**
 
-- **Type-based registration and resolution**
-- **Lazy or eager singleton initialization**
-- **Thread-safe storage with `Arc`**
-- **Simple, predictable API**
-
-This crate is ideal for applications and services where you want to decouple components and manage lifecycles explicitly.
+Built for CLI tools, long-running services, or application backends.
 
 ---
 
 ## 🚀 Quick Start
 
-Add Shellder to your `Cargo.toml`:
+### Add Shellder to your project
 
 ```toml
 [dependencies]
-shellder = "0.1"
+shellder = "0.2.5"
 ```
 
-# 🧩 Current Features
-✅ Type-based registration and resolution
-✅ Eager singleton registration
-✅ Lazy initialization (factories run on first resolve)
-✅ Thread-safe interior mutability
-✅ Minimal dependencies (once_cell, thiserror)
+---
 
-# 🛣️ Roadmap / Upcoming Features
-Below are planned improvements:
+### Example
 
-- Named Registration & Resolution
+```rust
+use std::sync::Arc;
+use shellder::{App, Container, Hooks, Hookable};
 
-Allow mapping components with string keys.
+pub struct Logger;
+impl Logger {
+    pub fn log(&self, msg: &str) {
+        println!("[LOG] {}", msg);
+    }
+}
 
-Enable multiple instances of the same type.
+#[derive(App)]
+pub struct HelloApp {
+    #[component]
+    logger: Arc<Logger>,
+}
 
-- Configuration Management
+impl Hooks for HelloApp {
+    fn startup(&self) {
+        self.logger.log("Starting up!");
+    }
 
-Load .toml / .yaml configs into typed structs automatically.
+    fn run(&self) {
+        self.logger.log("Running...");
+    }
 
-- Container Builder
+    fn cleanup(&self) {
+        self.logger.log("Shutting down.");
+    }
+}
+```
 
-Fluent API for building and wiring dependencies.
+Running this app will automatically inject dependencies and call hooks in order.
 
-- Lifecycle Hooks
+---
 
-start() and stop() methods for components to manage initialization/cleanup.
+## 🧩 Features in v0.2.5
 
-- Procedural Macros
+✅ `#[component]` macro for auto-registration
+✅ `#[derive(App)]` macro to auto-generate `main()`
+✅ Lifecycle `Hooks` trait support
+✅ Thread-safe singleton container
+✅ Optional custom logger
+✅ Works without `tokio` or async runtime
 
-#[component] and #[inject] derive macros to reduce boilerplate.
+---
 
-- Application Runner
+## 🛠️ Planned Roadmap
 
-shellder::run() helper for simple startup and shutdown logic.
+* 🔖 Named registration & resolution (`"db", "logger"`)
+* 🧪 Test container for mocking dependencies
+* 🧬 Config loader (from `.toml` or `.yaml`)
+* 🧱 Fluent container builder
+* 🧩 Macro plugins: `#[value]`, `#[config]`, etc.
+* 🧵 Async hook support
+* 📁 Workspace support & automatic example runner
 
-- Testing Utilities
+---
 
-Helpers to swap dependencies with mocks for unit testing.
+## 💡 Philosophy
 
-# 💡 Vision
-Shellder aims to be a batteries-included application framework inspired by Spring, but fully Rust-idiomatic:
+Shellder follows a **Rust-first** vision:
 
-- Clear compile-time safety
-- Minimal runtime overhead
-- Ergonomic macros and configuration
-- Easy integration with web frameworks and CLI tools
+* ✅ Strong compile-time guarantees
+* 🧼 Minimal runtime dependencies
+* 🛠️ Clean syntax with macros
+* 🤝 Integrates well with your architecture
 
-# 📝 License
-Licensed under MIT OR Apache-2.0.
+---
 
-# 🤝 Contributing
-Contributions and feedback are very welcome!
+## 📝 License
 
-# 📣 Stay Tuned
-Follow the project for upcoming releases with configuration loading, lifecycle management, and macro support.
+Licensed under **Apache-2.0**.
+
+---
+
+## 🤝 Contributing
+
+Bug reports, PRs, and feedback are welcome!
+Open an issue to discuss enhancements or integrations.
+
+---
+
+## 📣 Stay Tuned
+
+Shellder is under active development.
+Watch the repo for updates on:
+
+* Configuration loading
+* DI graphs
+* CLI/web framework integrations
+* Logging plugins
