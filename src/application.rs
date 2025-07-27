@@ -3,8 +3,7 @@
 
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, DeriveInput, Fields, Attribute};
-use syn::{Type, PathArguments, GenericArgument};
+use syn::{parse_macro_input, Attribute, DeriveInput, Fields, GenericArgument, PathArguments, Type};
 
 fn strip_arc(ty: &Type) -> &Type {
     if let Type::Path(type_path) = ty {
@@ -21,13 +20,11 @@ fn strip_arc(ty: &Type) -> &Type {
     ty
 }
 
-
 fn is_component(attrs: &[Attribute]) -> bool {
     attrs.iter().any(|attr| attr.path().is_ident("component"))
 }
 
-
-pub fn inject_derive(input: TokenStream) -> TokenStream {
+pub fn app_impl(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let name = &input.ident;
 
@@ -40,6 +37,7 @@ pub fn inject_derive(input: TokenStream) -> TokenStream {
     };
     let mut inject_args = Vec::new();
     let mut constructor_fields = Vec::new();
+    let mut register_feilds = Vec::new();
 
     for f in fields {
         let fname = &f.ident;
@@ -48,6 +46,9 @@ pub fn inject_derive(input: TokenStream) -> TokenStream {
             let fty = strip_arc(&f.ty);
             constructor_fields.push(quote! {
                 #fname: container.resolve::<#fty>().expect("Inject Error")
+            });
+            register_feilds.push(quote! {
+                #fty
             });
         } else {
             let fty = &f.ty;
@@ -60,7 +61,14 @@ pub fn inject_derive(input: TokenStream) -> TokenStream {
         }
     };
 
-    let expanded = quote! {
+    let gen = quote! {
+        impl Hookable for #name {
+            fn run_hooks(&self){
+                self.startup();
+                self.run();
+                self.cleanup();
+            }
+        }
         impl #name {
             fn inject(container: &Container, #(#inject_args),*) -> Self {
                 Self {
@@ -68,7 +76,15 @@ pub fn inject_derive(input: TokenStream) -> TokenStream {
                 }
             }
         }
+
+        fn main() {
+            let container = Container::new();
+            #(container.register(#register_feilds::new());)*
+            let app = #name::inject(&container);
+            app.run_hooks();
+        }
     };
 
-    TokenStream::from(expanded)
+    TokenStream::from(gen)
 }
+

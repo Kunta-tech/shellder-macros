@@ -1,3 +1,5 @@
+// Copyright (c) 2025 Saugata Kundu - kundusaugata576@gmail.com
+// Licensed under the Apache-2.0 License
 
 use proc_macro::TokenStream;
 use quote::quote;
