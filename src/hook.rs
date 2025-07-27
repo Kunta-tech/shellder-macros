@@ -15,7 +15,7 @@ pub fn derive_hooks_impl(input: TokenStream) -> TokenStream {
 
     // Generate the impl Hooks
     let expanded = quote! {
-        impl Hookable for #name {
+        impl Lifecycle for #name {
             fn run_hooks(&self){
                 self.startup();
                 self.run();

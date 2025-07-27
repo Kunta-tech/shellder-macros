@@ -62,7 +62,7 @@ pub fn app_impl(input: TokenStream) -> TokenStream {
     };
 
     let gen = quote! {
-        impl Hookable for #name {
+        impl Lifecycle for #name {
             fn run_hooks(&self){
                 self.startup();
                 self.run();
